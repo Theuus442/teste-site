@@ -1,19 +1,22 @@
 # Habilitar RewriteEngine
 RewriteEngine On
+RewriteBase /
 
-# Redirecionar URLs com -sp para sem -sp (301 permanente)
-RewriteCond %{REQUEST_URI} ^(.*)sorocaba-sp(.*)$
-RewriteRule ^(.*)$ %1sorocaba%2 [R=301,L]
+# Servir arquivo HTML com -sp quando solicitado sem -sp (primeira prioridade)
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME}-sp.html -f
+RewriteRule ^(.*)$ $1-sp.html [L]
 
-# Redirecionar URLs com .html para sem .html (301 permanente)
-RewriteCond %{REQUEST_URI} ^(.+)\.html$
-RewriteRule ^(.+)\.html$ /$1 [R=301,L]
-
-# Servir arquivos HTML sem extensão
+# Fallback: servir arquivo HTML normal sem extensão
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteCond %{REQUEST_FILENAME}.html -f
 RewriteRule ^(.*)$ $1.html [L]
+
+# Redirecionar URLs com .html para sem .html (301 permanente)
+RewriteCond %{REQUEST_URI} ^(.+)\.html$
+RewriteRule ^(.+)\.html$ /$1 [R=301,L]
 
 # Redirecionar index.html para / (homepage)
 RewriteCond %{THE_REQUEST} ^.*/index\.html
